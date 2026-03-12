@@ -13,7 +13,7 @@ export default function Contact() {
 
         <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-12 sm:mt-20 lg:grid-cols-2">
           {/* Contact Information */}
-          <div className="rounded-2xl bg-gray-50 p-10 shadow-sm border border-gray-100">
+          <div className="rounded-2xl bg-gray-50 p-6 sm:p-10 shadow-sm border border-gray-100">
             <h3 className="text-2xl font-bold tracking-tight text-gray-900">Get in touch</h3>
             <p className="mt-4 text-base leading-7 text-gray-600">
               Reach out to our project office regarding any environmental concerns or inquiries about our intervention areas.

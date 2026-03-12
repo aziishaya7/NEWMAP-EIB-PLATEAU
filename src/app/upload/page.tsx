@@ -50,7 +50,7 @@ export default function UploadProgress() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-gray-50 p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+        <form onSubmit={handleSubmit} className="bg-gray-50 p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
           {success && (
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3 text-green-800">
               <CheckCircle2 className="h-5 w-5" />

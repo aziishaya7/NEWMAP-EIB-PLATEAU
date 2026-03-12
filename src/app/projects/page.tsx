@@ -40,7 +40,7 @@ export default function Projects() {
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
           <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
-              <div key={project.id} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition hover:shadow-lg">
+              <div key={project.id} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm transition hover:shadow-lg">
                 <h3 className="text-xl font-semibold leading-8 text-gray-900">{project.title}</h3>
                 <p className="mt-4 text-base leading-7 text-gray-600 flex-1">{project.description}</p>
                 <div className="mt-6 flex items-center gap-x-4">

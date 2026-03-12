@@ -18,8 +18,8 @@ export default function Home() {
             <p className="mt-6 text-lg leading-8 text-gray-600">
               Welcome to NEWMAP-EIB Plateau State. We are committed to environmental protection, erosion control, flood management, and sustainable development across the region.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link href="/projects" className="rounded-md bg-green-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700 flex items-center gap-2">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-y-4 sm:gap-x-6">
+              <Link href="/projects" className="rounded-md bg-green-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700 w-full sm:w-auto flex items-center justify-center gap-2">
                 View Ongoing Projects <ArrowRight className="h-4 w-4" />
               </Link>
               <Link href="/about" className="text-sm font-semibold leading-6 text-gray-900">
