@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X, Leaf } from "lucide-react";
+import Image from "next/image";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -22,9 +23,10 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2">
-            <span className="sr-only">NEWMAP-EIB Plateau</span>
+          <Image src="/newmaplogo.jpg" width={80} height={50} alt="new map" />
+            {/* <span className="sr-only">NEWMAP-EIB Plateau</span>
             <Leaf className="h-8 w-8 text-green-700" />
-            <span className="text-xl font-bold text-gray-900 tracking-tight">NEWMAP-EIB <span className="text-green-700">Plateau</span></span>
+            <span className="text-xl font-bold text-gray-900 tracking-tight">NEWMAP-EIB <span className="text-green-700">Plateau</span></span> */}
           </Link>
         </div>
         <div className="flex lg:hidden">
