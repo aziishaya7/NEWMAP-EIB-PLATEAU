@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Leaf } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -11,8 +12,7 @@ export default function Footer() {
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8 xl:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <Leaf className="h-8 w-8 text-green-500" />
-              <span className="text-xl font-bold text-white tracking-tight">NEWMAP-EIB</span>
+              <Image src="/newmaplogo.jpg" width={80} height={50} alt="new map" />
             </Link>
             <p className="text-sm leading-6 text-gray-300">
               Addressing environmental degradation challenges, soil erosion, and flooding in Plateau State. Supported by the European Investment Bank.
@@ -41,13 +41,15 @@ export default function Footer() {
                 <h3 className="text-sm font-semibold leading-6 text-white">Contact</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
-                    <p className="text-sm leading-6 text-gray-300">Plateau State Project Office</p>
+                    <p className="text-sm leading-6 text-gray-300">No 11 Wamba Road Tudun Wada GRA JOS Plateau State</p>
                   </li>
                   <li>
-                    <a href="mailto:info@newmapeibplateau.org" className="text-sm leading-6 text-gray-300 hover:text-white">info@newmapeibplateau.org</a>
+                    <a href="mailto:newmapeibjos@gmail.com" className="text-sm leading-6 text-gray-300 hover:text-white">newmapeibjos@gmail.com
+
+                    </a>
                   </li>
                   <li>
-                    <p className="text-sm leading-6 text-gray-300">+234 XXX XXX XXXX</p>
+                    <p className="text-sm leading-6 text-gray-300">+234 8067461331</p>
                   </li>
                 </ul>
               </div>
