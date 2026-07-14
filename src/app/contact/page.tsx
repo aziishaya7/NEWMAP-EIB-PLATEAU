@@ -25,7 +25,7 @@ export default function Contact() {
                   <Building2 className="h-7 w-6 text-green-700" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <p className="font-semibold text-gray-900">Plateau State Project Office</p>
+                  <p className="font-semibold text-gray-900">No 11 Wamba Road Tudun Wada GRA JOS Plateau State</p>
                   Jos, Plateau State<br />
                   Nigeria
                 </dd>
@@ -36,7 +36,7 @@ export default function Contact() {
                   <Phone className="h-7 w-6 text-green-700" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <a className="hover:text-green-700 hover:underline" href="tel:+234XXXXXXXXX">
+                  <a className="hover:text-green-700 hover:underline" href="tel:+234 8067461331">
                     +234 XXX XXX XXXX
                   </a>
                 </dd>
@@ -47,8 +47,8 @@ export default function Contact() {
                   <Mail className="h-7 w-6 text-green-700" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <a className="hover:text-green-700 hover:underline" href="mailto:info@newmapeibplateau.org">
-                    info@newmapeibplateau.org
+                  <a className="hover:text-green-700 hover:underline" href="mailto:newmapeibjos@gmail.com">
+                    newmapeibjos@gmail.com
                   </a>
                 </dd>
               </div>
