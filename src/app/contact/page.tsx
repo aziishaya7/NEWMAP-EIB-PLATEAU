@@ -26,7 +26,7 @@ export default function Contact() {
                 </dt>
                 <dd>
                   <p className="font-semibold text-gray-900">No 11 Wamba Road Tudun Wada GRA JOS Plateau State</p>
-                  Jos, Plateau State<br />
+                  <br />
                   Nigeria
                 </dd>
               </div>
@@ -37,7 +37,7 @@ export default function Contact() {
                 </dt>
                 <dd>
                   <a className="hover:text-green-700 hover:underline" href="tel:+234 8067461331">
-                    +234 XXX XXX XXXX
+                    +234 8067461331
                   </a>
                 </dd>
               </div>
