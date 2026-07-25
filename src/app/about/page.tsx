@@ -10,7 +10,7 @@ export default function About() {
           <div className="mt-10 grid max-w-xl grid-cols-1 gap-8 text-base leading-7 text-gray-700 lg:max-w-none lg:grid-cols-2">
             <div>
               <p>
-                The Nigeria Erosion and Watershed Management Project (NEWMAP), supported by the European Investment Bank (EIB), focuses on addressing environmental degradation challenges in Plateau State.
+                The European investment Bank assisted Nigeria Climate Adaptation- Erosion Watershed Project focuses on addressing environmental degradation challenges in Plateau State.
               </p>
               <p className="mt-8">
                 With a landscape that is both beautiful and vulnerable, Plateau State has faced significant challenges from severe gully erosion and devastating seasonal flooding. These environmental risks not only threaten infrastructure and agricultural lands but also the very livelihoods of local communities.
