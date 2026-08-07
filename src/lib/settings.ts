@@ -9,9 +9,9 @@ export async function isRegistrationOpen(): Promise<boolean> {
       .eq("id", 1)
       .maybeSingle();
 
-    if (error || !data) return true;
+    if (error || !data) return false;
     return Boolean(data.registration_open);
   } catch {
-    return true;
+    return false;
   }
 }

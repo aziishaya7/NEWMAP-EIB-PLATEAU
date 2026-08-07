@@ -52,8 +52,9 @@ export default function RegistrationToggle({
             Open registration
           </h3>
           <p className="mt-1 text-sm text-gray-600">
-            When off, the register page closes and only existing accounts (or
-            admin-created accounts later) can sign in.
+            Default is invite-only: public nav does not advertise signup, and
+            accounts are created in Admin → Users. Turn on only for temporary
+            emergency self-registration (page stays unlisted).
           </p>
         </div>
         <button
