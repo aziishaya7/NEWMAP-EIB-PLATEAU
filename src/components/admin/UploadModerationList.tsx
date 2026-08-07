@@ -74,6 +74,10 @@ export default function UploadModerationList({
               <p className="mt-3 text-xs text-gray-500">
                 By {item.uploaderName} ·{" "}
                 {new Date(item.date).toLocaleString()}
+                {item.projectTitle ? ` · ${item.projectTitle}` : ""}
+                {typeof item.progressPct === "number"
+                  ? ` · ${item.progressPct}%`
+                  : ""}
               </p>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">

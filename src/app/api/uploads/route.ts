@@ -11,10 +11,30 @@ export async function POST(request: Request) {
     const title = String(body.title ?? "").trim();
     const description = String(body.description ?? "").trim();
     const imagePath = String(body.imagePath ?? "").trim();
+    const projectId = String(body.projectId ?? "").trim();
+    const progressPct = Number(body.progressPct);
 
     if (!title || !imagePath) {
       return NextResponse.json(
         { error: "title and imagePath are required." },
+        { status: 400 }
+      );
+    }
+
+    if (!projectId) {
+      return NextResponse.json(
+        { error: "Select a project for this progress photo." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      !Number.isFinite(progressPct) ||
+      progressPct < 0 ||
+      progressPct > 100
+    ) {
+      return NextResponse.json(
+        { error: "progressPct must be between 0 and 100." },
         { status: 400 }
       );
     }
@@ -28,8 +48,20 @@ export async function POST(request: Request) {
     }
 
     const status = isAdmin(user) ? "approved" : "pending";
+    const pct = Math.round(progressPct);
 
     const admin = createAdminClient();
+
+    const { data: project, error: projectError } = await admin
+      .from("projects")
+      .select("id, progress")
+      .eq("id", projectId)
+      .maybeSingle();
+
+    if (projectError || !project) {
+      return NextResponse.json({ error: "Project not found." }, { status: 400 });
+    }
+
     const { data, error } = await admin
       .from("gallery_items")
       .insert({
@@ -38,8 +70,12 @@ export async function POST(request: Request) {
         image_path: imagePath,
         status,
         user_id: user.id,
+        project_id: projectId,
+        progress_pct: pct,
       })
-      .select("id, title, description, image_path, created_at, status")
+      .select(
+        "id, title, description, image_path, created_at, status, project_id, progress_pct"
+      )
       .single();
 
     if (error || !data) {
@@ -47,8 +83,9 @@ export async function POST(request: Request) {
       const hint =
         error?.message?.includes("schema cache") ||
         error?.message?.includes("gallery_items") ||
-        error?.message?.includes("user_id")
-          ? " Run supabase/migrations/002_auth_cms.sql in the Supabase SQL Editor, then retry."
+        error?.message?.includes("project_id") ||
+        error?.message?.includes("progress_pct")
+          ? " Run supabase/migrations/005_project_progress_media.sql (or npm run db:migrate), then retry."
           : "";
       return NextResponse.json(
         {
@@ -59,7 +96,15 @@ export async function POST(request: Request) {
     }
 
     if (status === "approved") {
+      if (pct > (project.progress ?? 0)) {
+        await admin
+          .from("projects")
+          .update({ progress: pct })
+          .eq("id", projectId);
+      }
       revalidatePath("/gallery");
+      revalidatePath("/projects");
+      revalidatePath(`/projects/${projectId}`);
     }
     revalidatePath("/profile");
     revalidatePath("/admin");
@@ -75,6 +120,8 @@ export async function POST(request: Request) {
         imageUrl: publicStorageUrl(data.image_path),
         date: data.created_at,
         status: data.status,
+        projectId: data.project_id,
+        progressPct: data.progress_pct,
       },
     });
   } catch (error) {

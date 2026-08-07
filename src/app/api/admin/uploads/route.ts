@@ -15,6 +15,20 @@ export async function PATCH(request: Request) {
     }
 
     const admin = createAdminClient();
+
+    const { data: item, error: fetchError } = await admin
+      .from("gallery_items")
+      .select("id, project_id, progress_pct")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (fetchError || !item) {
+      return NextResponse.json(
+        { error: fetchError?.message || "Upload not found." },
+        { status: 404 }
+      );
+    }
+
     const { error } = await admin
       .from("gallery_items")
       .update({ status })
@@ -22,6 +36,24 @@ export async function PATCH(request: Request) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    if (status === "approved" && item.project_id) {
+      const pct = item.progress_pct ?? 0;
+      const { data: project } = await admin
+        .from("projects")
+        .select("progress")
+        .eq("id", item.project_id)
+        .maybeSingle();
+
+      if (project && pct > (project.progress ?? 0)) {
+        await admin
+          .from("projects")
+          .update({ progress: pct })
+          .eq("id", item.project_id);
+      }
+      revalidatePath(`/projects/${item.project_id}`);
+      revalidatePath("/projects");
     }
 
     revalidatePath("/gallery");
