@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Applies supabase/migrations/001_gallery.sql
+ * Applies all SQL files in supabase/migrations/ in filename order.
  *
  * Requires DATABASE_URL in .env / .env.local
  * (Supabase → Project Settings → Database → URI)
@@ -91,6 +91,38 @@ function buildCandidates(databaseUrl, env) {
   return candidates;
 }
 
+function listMigrationFiles() {
+  const dir = path.join(__dirname, "..", "supabase", "migrations");
+  return fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .map((f) => ({ name: f, path: path.join(dir, f) }));
+}
+
+async function applyMigrations(client, migrations) {
+  for (const migration of migrations) {
+    const sql = fs.readFileSync(migration.path, "utf8");
+    await client.query(sql);
+    console.log(`Applied ${migration.name}`);
+  }
+
+  const check = await client.query(`
+    select
+      to_regclass('public.gallery_items') as gallery_items,
+      exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public'
+          and table_name = 'gallery_items'
+          and column_name = 'user_id'
+      ) as has_user_id,
+      to_regclass('public.profiles') as profiles,
+      to_regclass('public.projects') as projects,
+      to_regclass('public.news_posts') as news_posts
+  `);
+  console.log("Schema check:", check.rows[0]);
+}
+
 async function main() {
   const env = loadEnv();
   const databaseUrl = env.DATABASE_URL || env.SUPABASE_DB_URL;
@@ -105,14 +137,17 @@ async function main() {
     process.exit(1);
   }
 
-  const sqlPath = path.join(
-    __dirname,
-    "..",
-    "supabase",
-    "migrations",
-    "001_gallery.sql"
+  const migrations = listMigrationFiles();
+  if (migrations.length === 0) {
+    console.error("No .sql files found in supabase/migrations/");
+    process.exit(1);
+  }
+
+  console.log(
+    `Applying ${migrations.length} migration(s):`,
+    migrations.map((m) => m.name).join(", ")
   );
-  const sql = fs.readFileSync(sqlPath, "utf8");
+
   const candidates = buildCandidates(databaseUrl, env);
   let lastError = null;
 
@@ -120,14 +155,8 @@ async function main() {
     const client = new Client(candidate.config);
     try {
       await client.connect();
-      await client.query(sql);
-      const check = await client.query(
-        `select to_regclass('public.gallery_items') as table_name`
-      );
-      console.log(
-        `Migration applied via ${candidate.label}. gallery_items =`,
-        check.rows[0]?.table_name || "MISSING"
-      );
+      await applyMigrations(client, migrations);
+      console.log(`Done via ${candidate.label}.`);
       await client.end();
       return;
     } catch (error) {

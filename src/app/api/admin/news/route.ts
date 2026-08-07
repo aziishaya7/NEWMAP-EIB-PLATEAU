@@ -3,17 +3,38 @@ import { revalidatePath } from "next/cache";
 import { AuthError, requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+function revalidateNews(id?: string) {
+  revalidatePath("/news");
+  revalidatePath("/admin/news");
+  revalidatePath("/admin");
+  if (id) revalidatePath(`/news/${id}`);
+}
+
 export async function POST(request: Request) {
   try {
     await requireAdmin();
     const body = await request.json();
     const title = String(body.title ?? "").trim();
     const summary = String(body.summary ?? "").trim();
+    const articleBody = String(body.body ?? "").trim();
     const publishedAt = String(body.publishedAt ?? "").trim();
     const published = Boolean(body.published);
+    const coverImagePath =
+      body.coverImagePath === null || body.coverImagePath === ""
+        ? null
+        : String(body.coverImagePath ?? "").trim() || null;
 
     if (!title) {
       return NextResponse.json({ error: "Title is required." }, { status: 400 });
+    }
+
+    if (
+      coverImagePath &&
+      (coverImagePath.includes("..") ||
+        coverImagePath.startsWith("/") ||
+        !coverImagePath.startsWith("news/"))
+    ) {
+      return NextResponse.json({ error: "Invalid cover image path." }, { status: 400 });
     }
 
     const admin = createAdminClient();
@@ -22,6 +43,8 @@ export async function POST(request: Request) {
       .insert({
         title,
         summary,
+        body: articleBody,
+        cover_image_path: coverImagePath,
         published_at: publishedAt || new Date().toISOString().slice(0, 10),
         published,
       })
@@ -32,9 +55,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    revalidatePath("/news");
-    revalidatePath("/admin/news");
-    revalidatePath("/admin");
+    revalidateNews(data.id);
 
     return NextResponse.json({ success: true, post: data });
   } catch (error) {
@@ -57,9 +78,28 @@ export async function PATCH(request: Request) {
     const updates: Record<string, unknown> = {};
     if (body.title !== undefined) updates.title = String(body.title).trim();
     if (body.summary !== undefined) updates.summary = String(body.summary).trim();
+    if (body.body !== undefined) updates.body = String(body.body).trim();
     if (body.publishedAt !== undefined)
       updates.published_at = String(body.publishedAt).trim();
     if (body.published !== undefined) updates.published = Boolean(body.published);
+    if (body.coverImagePath !== undefined) {
+      if (body.coverImagePath === null || body.coverImagePath === "") {
+        updates.cover_image_path = null;
+      } else {
+        const path = String(body.coverImagePath).trim();
+        if (
+          path.includes("..") ||
+          path.startsWith("/") ||
+          !path.startsWith("news/")
+        ) {
+          return NextResponse.json(
+            { error: "Invalid cover image path." },
+            { status: 400 }
+          );
+        }
+        updates.cover_image_path = path;
+      }
+    }
 
     const admin = createAdminClient();
     const { error } = await admin.from("news_posts").update(updates).eq("id", id);
@@ -68,9 +108,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    revalidatePath("/news");
-    revalidatePath("/admin/news");
-    revalidatePath("/admin");
+    revalidateNews(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -97,9 +135,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    revalidatePath("/news");
-    revalidatePath("/admin/news");
-    revalidatePath("/admin");
+    revalidateNews(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

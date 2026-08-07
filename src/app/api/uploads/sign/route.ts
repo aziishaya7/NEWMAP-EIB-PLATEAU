@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AuthError, requireUser } from "@/lib/auth";
+import { AuthError, isAdmin, requireUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { GALLERY_BUCKET } from "@/lib/supabase/constants";
 import {
@@ -135,6 +135,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const filename = String(body.filename ?? "");
     const contentType = String(body.contentType ?? "");
+    const purpose = String(body.purpose ?? "progress");
 
     if (!filename || !contentType) {
       return NextResponse.json(
@@ -150,11 +151,22 @@ export async function POST(request: Request) {
       );
     }
 
+    if (purpose === "news" && !isAdmin(user)) {
+      return NextResponse.json(
+        { error: "Admin access required for news covers." },
+        { status: 403 }
+      );
+    }
+
     const safeBase = filename
       .replace(/\.[^.]+$/, "")
       .replace(/[^\w.-]+/g, "_")
       .slice(0, 80);
-    const path = `${user.id}/${Date.now()}-${safeBase || "upload"}.${extensionFor(contentType, filename)}`;
+    const ext = extensionFor(contentType, filename);
+    const path =
+      purpose === "news"
+        ? `news/${Date.now()}-${safeBase || "cover"}.${ext}`
+        : `${user.id}/${Date.now()}-${safeBase || "upload"}.${ext}`;
 
     const data = await createSignedUploadUrlWithRetry(path);
 

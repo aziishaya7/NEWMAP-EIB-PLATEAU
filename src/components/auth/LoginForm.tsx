@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState } from "react";
-import Link from "next/link";
 import { loginAction, type AuthActionState } from "@/actions/auth";
 import PasswordInput from "@/components/ui/PasswordInput";
 
@@ -62,10 +61,7 @@ export default function LoginForm({ next }: { next: string }) {
       </button>
 
       <p className="text-center text-sm text-gray-600">
-        No account?{" "}
-        <Link href="/register" className="font-semibold text-green-700 hover:text-green-800">
-          Create one
-        </Link>
+        Accounts are provisioned by an administrator.
       </p>
     </form>
   );

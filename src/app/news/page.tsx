@@ -1,4 +1,7 @@
+import Image from "next/image";
+import Link from "next/link";
 import { Calendar, Megaphone } from "lucide-react";
+import MediaPlaceholder from "@/components/media/MediaPlaceholder";
 import { listPublishedNews } from "@/lib/news";
 
 export default async function News() {
@@ -22,7 +25,7 @@ export default async function News() {
             News updates will appear here once published.
           </p>
         ) : (
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-12 lg:mx-0 lg:max-w-none lg:grid-cols-3">
             {newsItems.map((post) => {
               const dateLabel = new Date(post.publishedAt).toLocaleDateString(
                 undefined,
@@ -31,27 +34,53 @@ export default async function News() {
               return (
                 <article
                   key={post.id}
-                  className="flex flex-col items-start justify-between rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition hover:shadow-md"
+                  className="flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md"
                 >
-                  <div className="flex items-center gap-x-4 text-xs">
-                    <time
-                      dateTime={post.publishedAt}
-                      className="flex items-center gap-1 text-gray-500"
-                    >
-                      <Calendar className="h-4 w-4" /> {dateLabel}
-                    </time>
-                    <div className="relative z-10 flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1.5 font-medium text-blue-600 hover:bg-blue-100">
-                      <Megaphone className="h-3 w-3" /> Announcement
+                  <Link
+                    href={`/news/${post.id}`}
+                    className="relative block aspect-[16/10] bg-gray-100"
+                  >
+                    {post.coverImageUrl ? (
+                      <Image
+                        src={post.coverImageUrl}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                      />
+                    ) : (
+                      <MediaPlaceholder label="NEWMAP news" />
+                    )}
+                  </Link>
+                  <div className="flex flex-1 flex-col p-6 sm:p-8">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+                      <time
+                        dateTime={post.publishedAt}
+                        className="flex items-center gap-1 text-gray-500"
+                      >
+                        <Calendar className="h-4 w-4" /> {dateLabel}
+                      </time>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1.5 font-medium text-blue-600">
+                        <Megaphone className="h-3 w-3" /> Announcement
+                      </span>
                     </div>
-                  </div>
-                  <div className="group relative">
-                    <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-green-700">
-                      <span className="absolute inset-0" />
-                      {post.title}
+                    <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900">
+                      <Link
+                        href={`/news/${post.id}`}
+                        className="hover:text-green-700"
+                      >
+                        {post.title}
+                      </Link>
                     </h3>
-                    <p className="mt-5 line-clamp-3 text-sm leading-6 text-gray-600">
+                    <p className="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-gray-600">
                       {post.summary}
                     </p>
+                    <Link
+                      href={`/news/${post.id}`}
+                      className="mt-4 text-sm font-semibold text-green-700 hover:text-green-800"
+                    >
+                      Read more →
+                    </Link>
                   </div>
                 </article>
               );

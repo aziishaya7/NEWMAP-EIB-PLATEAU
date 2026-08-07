@@ -53,6 +53,24 @@ export async function listPublishedProjects(): Promise<Project[]> {
   return (data ?? []).map(mapProject);
 }
 
+export async function getPublishedProjectById(
+  id: string
+): Promise<Project | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .eq("published", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Project by id error:", error.message);
+    return null;
+  }
+  return data ? mapProject(data) : null;
+}
+
 export async function listAllProjects(): Promise<Project[]> {
   const admin = createAdminClient();
   const { data, error } = await admin

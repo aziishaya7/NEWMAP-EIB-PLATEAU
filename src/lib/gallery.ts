@@ -11,6 +11,9 @@ export type GalleryItem = {
   date: string;
   status?: string;
   userId?: string | null;
+  projectId?: string | null;
+  progressPct: number;
+  projectTitle?: string | null;
 };
 
 export type GalleryItemAdmin = GalleryItem & {
@@ -24,7 +27,7 @@ export function publicStorageUrl(path: string): string {
   return `${base}/storage/v1/object/public/${GALLERY_BUCKET}/${path}`;
 }
 
-function mapRow(row: {
+type GalleryRow = {
   id: string;
   title: string;
   description: string | null;
@@ -32,7 +35,20 @@ function mapRow(row: {
   created_at: string;
   status?: string;
   user_id?: string | null;
-}): GalleryItem {
+  project_id?: string | null;
+  progress_pct?: number | null;
+  projects?: { title: string } | { title: string }[] | null;
+};
+
+function projectTitleFromJoin(
+  projects: GalleryRow["projects"]
+): string | null {
+  if (!projects) return null;
+  if (Array.isArray(projects)) return projects[0]?.title ?? null;
+  return projects.title ?? null;
+}
+
+function mapRow(row: GalleryRow): GalleryItem {
   return {
     id: row.id,
     title: row.title,
@@ -41,14 +57,20 @@ function mapRow(row: {
     date: row.created_at,
     status: row.status,
     userId: row.user_id,
+    projectId: row.project_id ?? null,
+    progressPct: row.progress_pct ?? 0,
+    projectTitle: projectTitleFromJoin(row.projects),
   };
 }
+
+const PUBLIC_SELECT =
+  "id, title, description, image_path, created_at, status, user_id, project_id, progress_pct, projects(title)";
 
 export async function listApprovedGalleryItems(): Promise<GalleryItem[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("gallery_items")
-    .select("id, title, description, image_path, created_at, status, user_id")
+    .select(PUBLIC_SELECT)
     .eq("status", "approved")
     .order("created_at", { ascending: false });
 
@@ -56,7 +78,7 @@ export async function listApprovedGalleryItems(): Promise<GalleryItem[]> {
     const admin = createAdminClient();
     const retry = await admin
       .from("gallery_items")
-      .select("id, title, description, image_path, created_at, status, user_id")
+      .select(PUBLIC_SELECT)
       .eq("status", "approved")
       .order("created_at", { ascending: false });
 
@@ -71,13 +93,31 @@ export async function listApprovedGalleryItems(): Promise<GalleryItem[]> {
   return (data ?? []).map(mapRow);
 }
 
+export async function listApprovedProgressForProject(
+  projectId: string
+): Promise<GalleryItem[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("gallery_items")
+    .select(PUBLIC_SELECT)
+    .eq("status", "approved")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Project progress fetch error:", error.message);
+    return [];
+  }
+  return (data ?? []).map(mapRow);
+}
+
 export async function listUserGalleryItems(
   userId: string
 ): Promise<GalleryItem[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("gallery_items")
-    .select("id, title, description, image_path, created_at, status, user_id")
+    .select(PUBLIC_SELECT)
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
 
@@ -93,7 +133,7 @@ export async function listPendingGalleryItems(): Promise<GalleryItemAdmin[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("gallery_items")
-    .select("id, title, description, image_path, created_at, status, user_id")
+    .select(PUBLIC_SELECT)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
@@ -120,8 +160,8 @@ export async function listPendingGalleryItems(): Promise<GalleryItemAdmin[]> {
 
   return rows.map((row) => ({
     ...mapRow(row),
-    status: row.status,
-    userId: row.user_id,
+    status: row.status ?? "pending",
+    userId: row.user_id ?? null,
     uploaderName: row.user_id
       ? nameById[row.user_id] ?? "Unknown"
       : "Unknown",
@@ -139,4 +179,27 @@ export async function countGalleryByStatus(
 
   if (error) return 0;
   return count ?? 0;
+}
+
+/** Latest approved progress image URL per project id. */
+export async function latestCoverByProjectIds(
+  projectIds: string[]
+): Promise<Record<string, string>> {
+  if (projectIds.length === 0) return {};
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("gallery_items")
+    .select("project_id, image_path, created_at")
+    .eq("status", "approved")
+    .in("project_id", projectIds)
+    .order("created_at", { ascending: false });
+
+  if (error || !data) return {};
+
+  const covers: Record<string, string> = {};
+  for (const row of data) {
+    if (!row.project_id || covers[row.project_id]) continue;
+    covers[row.project_id] = publicStorageUrl(row.image_path);
+  }
+  return covers;
 }

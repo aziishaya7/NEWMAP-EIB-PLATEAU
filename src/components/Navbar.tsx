@@ -9,7 +9,6 @@ import {
   User as UserIcon,
   LayoutDashboard,
   LogOut,
-  LogIn,
 } from "lucide-react";
 import { signOutAction } from "@/actions/auth";
 
@@ -129,22 +128,7 @@ export default function Navbar({ user }: { user: NavUser | null }) {
                 </>
               )}
             </div>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-900 hover:text-green-700"
-              >
-                <LogIn className="h-4 w-4" /> Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800"
-              >
-                Register
-              </Link>
-            </>
-          )}
+          ) : null}
         </div>
       </nav>
 
@@ -213,8 +197,8 @@ export default function Navbar({ user }: { user: NavUser | null }) {
                     </>
                   )}
                 </div>
-                <div className="space-y-3 py-6">
-                  {user ? (
+                {user && (
+                  <div className="space-y-3 py-6">
                     <form action={signOutAction}>
                       <button
                         type="submit"
@@ -223,25 +207,8 @@ export default function Navbar({ user }: { user: NavUser | null }) {
                         Sign out ({user.displayName})
                       </button>
                     </form>
-                  ) : (
-                    <>
-                      <Link
-                        href="/login"
-                        className="block w-full rounded-md border border-gray-200 px-4 py-2.5 text-center text-sm font-semibold text-gray-900"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Sign in
-                      </Link>
-                      <Link
-                        href="/register"
-                        className="block w-full rounded-md bg-green-700 px-4 py-2.5 text-center text-sm font-semibold text-white"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Register
-                      </Link>
-                    </>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
