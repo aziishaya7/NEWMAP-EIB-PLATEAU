@@ -23,15 +23,24 @@ SEED_ADMIN_PASSWORD=your-strong-password
 
 ### 2. Run SQL migrations (in order)
 
+**Option A — CLI (recommended):** add `DATABASE_URL` to `.env.local`, then:
+
+```bash
+npm run db:migrate
+```
+
+This applies every file in `supabase/migrations/` (including gallery, auth/CMS, close registration, news covers, and project progress media).
+
+**Option B — Dashboard:**
+
 1. Open [Supabase Dashboard](https://supabase.com/dashboard) → your project
 2. Go to **SQL Editor** → **New query**
-3. Paste and run [`supabase/migrations/001_gallery.sql`](migrations/001_gallery.sql)
-4. Paste and run [`supabase/migrations/002_auth_cms.sql`](migrations/002_auth_cms.sql)
+3. Paste and run each file in `supabase/migrations/` in filename order (`001` … `005`)
 
 This creates:
 
-- `gallery_items` (+ `user_id` ownership)
-- `profiles`, `projects`, `news_posts`, `app_settings`
+- `gallery_items` (+ `user_id`, `project_id`, `progress_pct`)
+- `profiles`, `projects`, `news_posts` (+ `body`, `cover_image_path`), `app_settings`
 - RLS policies and seed projects/news
 - Storage `gallery` bucket (from migration 001)
 
@@ -81,6 +90,6 @@ npm run dev
 | `/admin/settings` | Toggle open registration |
 | `/projects`, `/news`, `/gallery` | CMS / moderated public content |
 
-### Invite-only later
+### Invite-only (default)
 
-In **Admin → Settings**, turn **Open registration** off. Create accounts from **Admin → Users** instead.
+Public registration is **closed by default** (migration `003_close_registration.sql`). Create staff accounts from **Admin → Users**. Staff sign in at unlisted `/login` (not linked in the public nav). Use **Admin → Settings** only to temporarily reopen self-registration in an emergency.
