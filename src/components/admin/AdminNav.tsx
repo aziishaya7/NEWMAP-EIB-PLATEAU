@@ -9,6 +9,7 @@ import {
   Users,
   FolderKanban,
   Newspaper,
+  IdCard,
   Settings,
   Menu,
   X,
@@ -20,6 +21,7 @@ const links = [
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/news", label: "News", icon: Newspaper },
+  { href: "/admin/staff", label: "Staff", icon: IdCard },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 

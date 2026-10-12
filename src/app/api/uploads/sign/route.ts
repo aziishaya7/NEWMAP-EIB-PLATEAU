@@ -151,9 +151,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (purpose === "news" && !isAdmin(user)) {
+    if ((purpose === "news" || purpose === "staff") && !isAdmin(user)) {
       return NextResponse.json(
-        { error: "Admin access required for news covers." },
+        { error: "Admin access required for this upload." },
         { status: 403 }
       );
     }
@@ -163,10 +163,11 @@ export async function POST(request: Request) {
       .replace(/[^\w.-]+/g, "_")
       .slice(0, 80);
     const ext = extensionFor(contentType, filename);
-    const path =
-      purpose === "news"
-        ? `news/${Date.now()}-${safeBase || "cover"}.${ext}`
-        : `${user.id}/${Date.now()}-${safeBase || "upload"}.${ext}`;
+    const folder =
+      purpose === "news" ? "news" : purpose === "staff" ? "staff" : user.id;
+    const fallbackName =
+      purpose === "news" ? "cover" : purpose === "staff" ? "portrait" : "upload";
+    const path = `${folder}/${Date.now()}-${safeBase || fallbackName}.${ext}`;
 
     const data = await createSignedUploadUrlWithRetry(path);
 
