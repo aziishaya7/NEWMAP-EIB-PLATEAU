@@ -29,18 +29,18 @@ SEED_ADMIN_PASSWORD=your-strong-password
 npm run db:migrate
 ```
 
-This applies every file in `supabase/migrations/` (including gallery, auth/CMS, close registration, news covers, and project progress media).
+This applies every file in `supabase/migrations/` (including gallery, auth/CMS, close registration, news covers, project progress media, and the staff directory).
 
 **Option B — Dashboard:**
 
 1. Open [Supabase Dashboard](https://supabase.com/dashboard) → your project
 2. Go to **SQL Editor** → **New query**
-3. Paste and run each file in `supabase/migrations/` in filename order (`001` … `005`)
+3. Paste and run each file in `supabase/migrations/` in filename order (`001` … `006`)
 
 This creates:
 
 - `gallery_items` (+ `user_id`, `project_id`, `progress_pct`)
-- `profiles`, `projects`, `news_posts` (+ `body`, `cover_image_path`), `app_settings`
+- `profiles`, `projects`, `news_posts` (+ `body`, `cover_image_path`), `staff_members`, `app_settings`
 - RLS policies and seed projects/news
 - Storage `gallery` bucket (from migration 001)
 

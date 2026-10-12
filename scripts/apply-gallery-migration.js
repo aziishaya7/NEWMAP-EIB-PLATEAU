@@ -118,7 +118,9 @@ async function applyMigrations(client, migrations) {
       ) as has_user_id,
       to_regclass('public.profiles') as profiles,
       to_regclass('public.projects') as projects,
-      to_regclass('public.news_posts') as news_posts
+      to_regclass('public.news_posts') as news_posts,
+      to_regclass('public.staff_members') as staff_members,
+      (select count(*)::int from public.staff_members) as staff_count
   `);
   console.log("Schema check:", check.rows[0]);
 }

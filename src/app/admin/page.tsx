@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { countGalleryByStatus } from "@/lib/gallery";
 import { countPublishedNews } from "@/lib/news";
+import { countPublishedStaff } from "@/lib/staff";
 import { countPublishedProjects } from "@/lib/projects";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -18,11 +19,12 @@ async function countUsers(): Promise<number> {
 }
 
 export default async function AdminOverviewPage() {
-  const [pending, users, projects, news] = await Promise.all([
+  const [pending, users, projects, news, staff] = await Promise.all([
     countGalleryByStatus("pending"),
     countUsers(),
     countPublishedProjects(),
     countPublishedNews(),
+    countPublishedStaff(),
   ]);
 
   const cards = [
@@ -49,6 +51,12 @@ export default async function AdminOverviewPage() {
       value: news,
       href: "/admin/news",
       hint: "Live on site",
+    },
+    {
+      label: "Staff on site",
+      value: staff,
+      href: "/admin/staff",
+      hint: "Visible profiles",
     },
   ];
 
