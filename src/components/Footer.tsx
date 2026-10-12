@@ -1,6 +1,12 @@
 import Link from "next/link";
-import { Leaf } from "lucide-react";
 import Image from "next/image";
+import {
+  officeAddress,
+  officeEmail,
+  officeMapsUrl,
+  officePhoneDisplay,
+  officePhoneTel,
+} from "@/lib/site-contact";
 
 export default function Footer() {
   return (
@@ -27,6 +33,9 @@ export default function Footer() {
                     <Link href="/about" className="text-sm leading-6 text-gray-300 hover:text-white">About Us</Link>
                   </li>
                   <li>
+                    <Link href="/staff" className="text-sm leading-6 text-gray-300 hover:text-white">Our Staff</Link>
+                  </li>
+                  <li>
                     <Link href="/projects" className="text-sm leading-6 text-gray-300 hover:text-white">Projects</Link>
                   </li>
                   <li>
@@ -41,15 +50,25 @@ export default function Footer() {
                 <h3 className="text-sm font-semibold leading-6 text-white">Contact</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
-                    <p className="text-sm leading-6 text-gray-300">No 11 Wamba Road Tudun Wada GRA JOS Plateau State</p>
-                  </li>
-                  <li>
-                    <a href="mailto:newmapeibjos@gmail.com" className="text-sm leading-6 text-gray-300 hover:text-white">newmapeibjos@gmail.com
-
+                    <a
+                      href={officeMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Office address, open in Google Maps"
+                      className="text-sm leading-6 text-gray-300 hover:text-white"
+                    >
+                      {officeAddress}
                     </a>
                   </li>
                   <li>
-                    <p className="text-sm leading-6 text-gray-300">+234 8067461331</p>
+                    <a href={`mailto:${officeEmail}`} className="text-sm leading-6 text-gray-300 hover:text-white">
+                      {officeEmail}
+                    </a>
+                  </li>
+                  <li>
+                    <a href={`tel:${officePhoneTel}`} className="text-sm leading-6 text-gray-300 hover:text-white">
+                      {officePhoneDisplay}
+                    </a>
                   </li>
                 </ul>
               </div>

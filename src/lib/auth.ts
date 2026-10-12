@@ -1,5 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { nodeSupabaseHostResolves } from "@/lib/supabase/node-fetch";
+import { getSupabaseUrl } from "@/lib/supabase/env";
 import { isSuperAdmin } from "@/lib/super-admin";
 
 export function isAdmin(user: User | null | undefined): boolean {
@@ -34,10 +36,15 @@ export function resolvePostAuthPath(
 export { isSuperAdmin } from "@/lib/super-admin";
 
 export async function getSessionUser(): Promise<User | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) return null;
-  return data.user;
+  try {
+    if (!(await nodeSupabaseHostResolves(getSupabaseUrl()))) return null;
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) return null;
+    return data.user;
+  } catch {
+    return null;
+  }
 }
 
 export async function requireUser(): Promise<User> {

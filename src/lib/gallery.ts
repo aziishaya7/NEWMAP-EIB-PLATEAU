@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { GALLERY_BUCKET } from "@/lib/supabase/constants";
 import { getSupabaseUrl } from "@/lib/supabase/env";
+import { nodeSupabaseHostResolves } from "@/lib/supabase/node-fetch";
 import { createClient } from "@/lib/supabase/server";
 
 export type GalleryItem = {
@@ -67,6 +68,7 @@ const PUBLIC_SELECT =
   "id, title, description, image_path, created_at, status, user_id, project_id, progress_pct, projects(title)";
 
 export async function listApprovedGalleryItems(): Promise<GalleryItem[]> {
+  if (!(await nodeSupabaseHostResolves(getSupabaseUrl()))) return [];
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("gallery_items")

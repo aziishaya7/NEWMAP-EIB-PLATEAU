@@ -15,6 +15,7 @@ import { signOutAction } from "@/actions/auth";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
+  { name: "Our Staff", href: "/staff" },
   { name: "Projects", href: "/projects" },
   { name: "News", href: "/news" },
   { name: "Gallery", href: "/gallery" },

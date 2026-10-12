@@ -1,5 +1,7 @@
 import { publicStorageUrl } from "@/lib/gallery";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getSupabaseUrl } from "@/lib/supabase/env";
+import { nodeSupabaseHostResolves } from "@/lib/supabase/node-fetch";
 import { createClient } from "@/lib/supabase/server";
 
 export type NewsPost = {
@@ -42,6 +44,7 @@ function mapNews(row: {
 }
 
 export async function listPublishedNews(): Promise<NewsPost[]> {
+  if (!(await nodeSupabaseHostResolves(getSupabaseUrl()))) return [];
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("news_posts")
