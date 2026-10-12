@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import {
   updateDisplayNameAction,
   type ProfileActionState,
@@ -18,10 +18,12 @@ export default function DisplayNameForm({
     updateDisplayNameAction,
     initial
   );
+  const [seenSuccess, setSeenSuccess] = useState(state.success);
 
-  useEffect(() => {
+  if (state.success !== seenSuccess) {
+    setSeenSuccess(state.success);
     if (state.success) setEditing(false);
-  }, [state.success]);
+  }
 
   if (!editing) {
     return (

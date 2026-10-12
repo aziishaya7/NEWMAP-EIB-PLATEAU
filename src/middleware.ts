@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { supabaseFetch } from "@/lib/supabase/fetch";
+import { supabaseHostResolves } from "@/lib/supabase/reachable";
 
 function isAdminUser(user: {
   app_metadata?: Record<string, unknown>;
@@ -26,7 +28,12 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse;
   }
 
+  if (!(await supabaseHostResolves(url))) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(url, anonKey, {
+    global: { fetch: supabaseFetch },
     cookies: {
       getAll() {
         return request.cookies.getAll();
@@ -45,9 +52,13 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) user = data.user;
+  } catch {
+    // Auth host unreachable. Public pages still render; protected routes redirect to login.
+  }
 
   const path = request.nextUrl.pathname;
   const isAuthPage =

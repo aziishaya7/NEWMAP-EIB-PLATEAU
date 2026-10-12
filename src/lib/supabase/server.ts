@@ -1,14 +1,20 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSupabaseAnonKey, getSupabaseUrl } from "./env";
+import { nodeSupabaseFetch, nodeSupabaseHostResolves } from "./node-fetch";
 
 export async function createClient() {
   const cookieStore = await cookies();
+  const url = getSupabaseUrl();
+  const online = await nodeSupabaseHostResolves(url);
 
-  return createServerClient(getSupabaseUrl(), getSupabaseAnonKey(), {
+  return createServerClient(url, getSupabaseAnonKey(), {
+    global: { fetch: nodeSupabaseFetch },
     cookies: {
       getAll() {
-        return cookieStore.getAll();
+        // Skip the saved session when the project host does not resolve.
+        // Otherwise the auth client tries to refresh it and logs AuthRetryableFetchError.
+        return online ? cookieStore.getAll() : [];
       },
       setAll(cookiesToSet) {
         try {

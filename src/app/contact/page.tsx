@@ -1,4 +1,11 @@
 import { Building2, Mail, Phone } from "lucide-react";
+import {
+  officeAddress,
+  officeEmail,
+  officeMapsUrl,
+  officePhoneDisplay,
+  officePhoneTel,
+} from "@/lib/site-contact";
 
 export default function Contact() {
   return (
@@ -25,9 +32,15 @@ export default function Contact() {
                   <Building2 className="h-7 w-6 text-green-700" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <p className="font-semibold text-gray-900">No 11 Wamba Road Tudun Wada GRA JOS Plateau State</p>
-                  <br />
-                  Nigeria
+                  <a
+                    href={officeMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Office address, open in Google Maps"
+                    className="font-semibold text-gray-900 hover:text-green-700 hover:underline"
+                  >
+                    {officeAddress}
+                  </a>
                 </dd>
               </div>
               <div className="flex gap-x-4 mt-6">
@@ -36,8 +49,8 @@ export default function Contact() {
                   <Phone className="h-7 w-6 text-green-700" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <a className="hover:text-green-700 hover:underline" href="tel:+234 8067461331">
-                    +234 8067461331
+                  <a className="hover:text-green-700 hover:underline" href={`tel:${officePhoneTel}`}>
+                    {officePhoneDisplay}
                   </a>
                 </dd>
               </div>
@@ -47,8 +60,8 @@ export default function Contact() {
                   <Mail className="h-7 w-6 text-green-700" aria-hidden="true" />
                 </dt>
                 <dd>
-                  <a className="hover:text-green-700 hover:underline" href="mailto:newmapeibjos@gmail.com">
-                    newmapeibjos@gmail.com
+                  <a className="hover:text-green-700 hover:underline" href={`mailto:${officeEmail}`}>
+                    {officeEmail}
                   </a>
                 </dd>
               </div>
